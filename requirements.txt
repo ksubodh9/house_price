@@ -6,3 +6,8 @@ SQLAlchemy==2.0.41
 sqlmodel==0.0.24
 typing-inspection==0.4.1
 typing_extensions==4.14.0
+streamlit
+joblib
+scikit-learn
+numpy
+pandas
