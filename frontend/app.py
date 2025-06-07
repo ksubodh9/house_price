@@ -1,5 +1,10 @@
 import streamlit as st
-import requests
+import joblib
+
+model = joblib.load("utils/house_price_model.pkl")
+
+def predict(data):
+    return model.predict([data])[0]
 
 st.title("🏠 House Price Prediction App")
 
@@ -19,30 +24,15 @@ yr_renovated = st.number_input("Year Renovated", 0, 2023, 0)
 lat = st.number_input("Latitude", 47.0, 49.0, 47.6062)
 sqft_living15 = st.number_input("Sqft Living15", 300, 10000, 2500)
 
-# API endpoint
-api_url = "http://localhost:8000/ml/predict"
-
 if st.button("Predict Price"):
-    payload = {
-        "bedrooms": bedrooms,
-        "bathrooms": bathrooms,
-        "sqft_living": sqft_living,
-        "floors": floors,
-        "waterfront": waterfront,
-        "view": view,
-        "condition": condition,
-        "grade": grade,
-        "sqft_above": sqft_above,
-        "sqft_basement": sqft_basement,
-        "yr_built": yr_built,
-        "yr_renovated": yr_renovated,
-        "lat": lat,
-        "sqft_living15": sqft_living15
-    }
+    data = [
+        bedrooms, bathrooms, sqft_living, floors, waterfront,
+        view, condition, grade, sqft_above, sqft_basement,
+        yr_built, yr_renovated, lat, sqft_living15
+    ]
 
     try:
-        response = requests.post(api_url, json=payload)
-        result = response.json()
-        st.success(f"🏡 Predicted House Price: ${result['predicted_price']}")
+        predicted_price = predict(data)
+        st.success(f"🏡 Predicted House Price: ${predicted_price:,.2f}")
     except Exception as e:
-        st.error(f"Failed to get prediction. Error: {e}")
+        st.error(f"Prediction failed: {e}")
